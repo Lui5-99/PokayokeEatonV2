@@ -18,8 +18,8 @@ public class Menu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        var = limiteRegistrosAlcanzado(adminBD);
-        borrarTablasBD(adminBD, var);
+        //var = limiteRegistrosAlcanzado(adminBD);
+        //borrarTablasBD(adminBD, var);
     }
     public void Escaner(View v){
         Intent intent = new Intent(this, Packing.class);

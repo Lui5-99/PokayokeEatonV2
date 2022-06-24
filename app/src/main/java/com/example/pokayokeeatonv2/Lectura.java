@@ -55,6 +55,7 @@ import java.util.List;
 import repack.org.bouncycastle.crypto.util.Pack;
 
 public class Lectura extends AppCompatActivity {
+    ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
     ArrayList<String> DatosRec;
     ArrayList<Escaneos> escaneos;
     EditText edCodigo2D, edAIAG, edLineSet;
@@ -324,6 +325,7 @@ public class Lectura extends AppCompatActivity {
             Toast.makeText(this, "Archivo generado /Documents/Transmisiones", Toast.LENGTH_SHORT).show();
             escaneos.clear();
             Intent intent = new Intent(this, Packing.class);
+            crearTXT();
             limpiarBD(false);
             startActivity(intent);
         }
@@ -629,5 +631,38 @@ public class Lectura extends AppCompatActivity {
     }
     public void limpiarClick(View v){
         limpiar();
+    }
+    private void crearTXT(){
+        Date date = new Date();
+        DateFormat fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDate = fecha.format(date);
+        try {
+
+            OutputStreamWriter archivo = new OutputStreamWriter(openFileOutput( DatosRec.get(4) + currentDate + ".txt", Activity.MODE_PRIVATE));
+            //Se escriben los datos escaneados en el archivo de te texto plano
+            archivo.write("Work Order: " + DatosRec.get(1));
+            archivo.write("Gafete: " + DatosRec.get(3));
+            archivo.write("Cliente: " + DatosRec.get(4));
+            archivo.write("Destino: " + DatosRec.get(0));
+            archivo.write("Cantidad: " + DatosRec.get(2));
+            archivo.flush();
+            archivo.close();
+            borrarTablasBD(adminBD, true);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void borrarTablasBD (ModeloBD adminBD, boolean lim) {
+        if (lim) {
+            SQLiteDatabase BD = adminBD.getWritableDatabase();
+            BD.execSQL("delete from usuarios");
+            BD.execSQL("delete from clientes");
+            BD.execSQL("delete from destinos");
+            BD.execSQL("delete from Etiqueta");
+            BD.execSQL("delete from Registros");
+            BD.close();
+        }
     }
 }
