@@ -3,6 +3,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements config.DatosCuadr
         try{
             LimpiarXFecha();
             checkEstado();
+            revisarFecha();
         }
         catch(Exception ex){
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
@@ -159,6 +161,35 @@ public class MainActivity extends AppCompatActivity implements config.DatosCuadr
             add.put("Pass", "Test");
             BD.insert("usuarios", null, add);
         }
+        BD.close();
+    }
+
+    private void revisarFecha() throws ParseException {
+        SharedPreferences preferencias = getSharedPreferences("Preferencias", MODE_PRIVATE);
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SharedPreferences.Editor editor = preferencias.edit();
+        if (preferencias.contains("fecha")) {
+            String fecha_actual = preferencias.getString("fecha", "");
+            Date f_fecha_actual = format.parse(fecha_actual);
+            Date date = new Date(System.currentTimeMillis());
+            Date n_f_fecha = format.parse(date.toString());
+            int milisecondsByDay = 86400000;
+            int dias = (int) ((n_f_fecha.getTime() - f_fecha_actual.getTime()) / milisecondsByDay);
+            if (dias == 4) {
+                ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
+                BorrarReportesAtrasados(adminBD, fecha_actual, "Registros");
+                BorrarReportesAtrasados(adminBD, fecha_actual, "Etiqueta");
+                editor.putString("fecha", format.format(n_f_fecha));
+                editor.commit();
+            } else return;
+        } else {
+            editor.putString("fecha", format.format(new Date()));
+        }
+    }
+
+    public void BorrarReportesAtrasados(ModeloBD adminBD, String fecha, String tabla){
+        SQLiteDatabase BD = adminBD.getWritableDatabase();
+        BD.execSQL("delete from " + tabla + " WHERE fechaInsercion = " + fecha);
         BD.close();
     }
 }
