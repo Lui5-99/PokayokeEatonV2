@@ -391,7 +391,7 @@ public class Lectura extends AppCompatActivity {
         }
         else if(IsTwo(DatosRec) == 3){
             String _auxCodigoAIAG = edAIAG.getText().toString().trim();
-            _auxCodigoAIAG = _auxCodigoAIAG.substring(4, 12);
+            _auxCodigoAIAG = _auxCodigoAIAG.length() == 12 ? _auxCodigoAIAG.substring(4, 12) : _auxCodigoAIAG;
             add.put("CodigoBarras", DatosRec.get(3));
             add.put("etiqueta2D", Codigo2D);
             add.put("etiquetaAIAG", "");
@@ -569,7 +569,7 @@ public class Lectura extends AppCompatActivity {
                         if(edAIAG.getText().toString().length() == 12)
                             _auxCodigoAIAG = _auxCodigoAIAG.substring(4, 12);
                         else
-                            _auxCodigoAIAG += "$";
+                            _auxCodigoAIAG += "";
                     }
                     if(_auxCodigoAIAG.equals(_auxCodigo)){
                         //Si son 3 etiquetas habilita la siguiente y si no acaba con ese escaneo
