@@ -229,13 +229,26 @@ public class Packing extends AppCompatActivity {
     public void btnCodigoBarras_Click(View v){
         validaCodigoBarras();
     }
+    private boolean isExistCodigo2D(String _2D){
+        boolean bFound = false;
+        ModeloBD adminDB = new ModeloBD(this, "Eaton", null, 1);
+        SQLiteDatabase BD = adminDB.getWritableDatabase();
+        Cursor fila = BD.rawQuery("SELECT * FROM Etiqueta where CodigoBarras = '" + _2D + "'", null);
+        if(fila.moveToFirst()){
+            bFound = true;
+        }
+        return bFound;
+    }
     private void validaCodigoBarras(){
+        boolean estado = isExistCodigo2D(edtCodigo.getText().toString());
         if(!(edtCodigo.getText().toString().isEmpty())){
-            llenarCB(cbCliente, lClientes, "clientes", "nombre", 0);
-            btCodigo.setEnabled(false);
-            edtCodigo.setEnabled(false);
-            edNoDelivery.setFocusable(true);
-            edNoDelivery.requestFocus();
+            if(!estado) {
+                llenarCB(cbCliente, lClientes, "clientes", "nombre", 0);
+                btCodigo.setEnabled(false);
+                edtCodigo.setEnabled(false);
+                edNoDelivery.setFocusable(true);
+                edNoDelivery.requestFocus();
+            }
         }
     }
     public void btLimpiar_Click(View v){

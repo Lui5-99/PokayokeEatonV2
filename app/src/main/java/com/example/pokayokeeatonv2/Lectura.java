@@ -354,6 +354,17 @@ public class Lectura extends AppCompatActivity {
         Escaneos();
         startActivity(intent);
     }
+    private boolean isExistCodigo2D(String _2D){
+        boolean bFound = false;
+        ModeloBD adminDB = new ModeloBD(this, "Eaton", null, 1);
+        SQLiteDatabase BD = adminBD.getWritableDatabase();
+        Cursor fila = BD.rawQuery("SELECT * FROM Etiquetas where CodigoBarras = '" + _2D + "1", null);
+        if(fila.moveToFirst()){
+            bFound = true;
+        }
+        return bFound;
+    }
+
     //Metodo que guarda los escaneos en la BD
     private void Escaneos(){
         //Se lee el codigo 2D y se le retira el prefijo DM17
@@ -370,63 +381,67 @@ public class Lectura extends AppCompatActivity {
         String currentDate = fecha.format(date);
         String currentDateoHrs = fechaoHrs.format(date);
         String _aux = "";
-        //Verifcia si son 2 o 3 etiquetas para la inserción a la BD
-        if(IsTwo(DatosRec) == 1){
-            add.put("CodigoBarras", DatosRec.get(3));
-            add.put("etiqueta2D", Codigo2D);
-            add.put("etiquetaAIAG", edAIAG.getText().toString());
-            add.put("etiquetaLineSet", "");
-            add.put("fecha", currentDate);
-            add.put("fechaInsercion", currentDateoHrs);
-            add.put("Estado", 0);
-            BD.insert("Etiqueta", null, add);
+        /*boolean estado = isExistCodigo2D(Codigo2D);
+        if(!estado) {*/
+            //Verifcia si son 2 o 3 etiquetas para la inserción a la BD
+            if (IsTwo(DatosRec) == 1) {
+                add.put("CodigoBarras", DatosRec.get(3));
+                add.put("etiqueta2D", Codigo2D);
+                add.put("etiquetaAIAG", edAIAG.getText().toString());
+                add.put("etiquetaLineSet", "");
+                add.put("fecha", currentDate);
+                add.put("fechaInsercion", currentDateoHrs);
+                add.put("Estado", 0);
+                BD.insert("Etiqueta", null, add);
 
-            add2.put("CodigoBarras", DatosRec.get(3));
-            add2.put("etiqueta2D", Codigo2D);
-            add2.put("etiquetaAIAG", edAIAG.getText().toString());
-            add2.put("etiquetaLineSet", "");
-            add2.put("fecha", currentDate);
-            add2.put("fechaInsercion", currentDateoHrs);
-            BD.insert("Registros", null, add2);
-        }
-        else if(IsTwo(DatosRec) == 3){
-            String _auxCodigoAIAG = edAIAG.getText().toString().trim();
-            _auxCodigoAIAG = _auxCodigoAIAG.length() == 12 ? _auxCodigoAIAG.substring(4, 12) : _auxCodigoAIAG;
-            add.put("CodigoBarras", DatosRec.get(3));
-            add.put("etiqueta2D", Codigo2D);
-            add.put("etiquetaAIAG", "");
-            add.put("etiquetaLineSet", _auxCodigoAIAG);
-            add.put("fecha", currentDate);
-            add.put("fechaInsercion", currentDateoHrs);
-            add.put("Estado", 0);
-            BD.insert("Etiqueta", null, add);
+                add2.put("CodigoBarras", DatosRec.get(3));
+                add2.put("etiqueta2D", Codigo2D);
+                add2.put("etiquetaAIAG", edAIAG.getText().toString());
+                add2.put("etiquetaLineSet", "");
+                add2.put("fecha", currentDate);
+                add2.put("fechaInsercion", currentDateoHrs);
+                BD.insert("Registros", null, add2);
+            } else if (IsTwo(DatosRec) == 3) {
+                String _auxCodigoAIAG = edAIAG.getText().toString().trim();
+                _auxCodigoAIAG = _auxCodigoAIAG.length() == 12 ? _auxCodigoAIAG.substring(4, 12) : _auxCodigoAIAG;
+                add.put("CodigoBarras", DatosRec.get(3));
+                add.put("etiqueta2D", Codigo2D);
+                add.put("etiquetaAIAG", "");
+                add.put("etiquetaLineSet", _auxCodigoAIAG);
+                add.put("fecha", currentDate);
+                add.put("fechaInsercion", currentDateoHrs);
+                add.put("Estado", 0);
+                BD.insert("Etiqueta", null, add);
 
-            add2.put("CodigoBarras", DatosRec.get(3));
-            add2.put("etiqueta2D", Codigo2D);
-            add2.put("etiquetaAIAG", "");
-            add2.put("etiquetaLineSet", _auxCodigoAIAG);
-            add2.put("fecha", currentDate);
-            add2.put("fechaInsercion", currentDateoHrs);
-            BD.insert("Registros", null, add2);
-        }
-        else {
-            add.put("CodigoBarras", DatosRec.get(3));
-            add.put("etiqueta2D", Codigo2D);
-            add.put("etiquetaAIAG", edAIAG.getText().toString());
-            add.put("etiquetaLineSet", edLineSet.getText().toString());
-            add.put("fecha", currentDate);
-            add.put("fechaInsercion", currentDateoHrs);
-            add.put("Estado", 0);
-            BD.insert("Etiqueta", null, add);
+                add2.put("CodigoBarras", DatosRec.get(3));
+                add2.put("etiqueta2D", Codigo2D);
+                add2.put("etiquetaAIAG", "");
+                add2.put("etiquetaLineSet", _auxCodigoAIAG);
+                add2.put("fecha", currentDate);
+                add2.put("fechaInsercion", currentDateoHrs);
+                BD.insert("Registros", null, add2);
+            } else {
+                add.put("CodigoBarras", DatosRec.get(3));
+                add.put("etiqueta2D", Codigo2D);
+                add.put("etiquetaAIAG", edAIAG.getText().toString());
+                add.put("etiquetaLineSet", edLineSet.getText().toString());
+                add.put("fecha", currentDate);
+                add.put("fechaInsercion", currentDateoHrs);
+                add.put("Estado", 0);
+                BD.insert("Etiqueta", null, add);
 
-            add2.put("CodigoBarras", DatosRec.get(3));
-            add2.put("etiqueta2D", Codigo2D);
-            add2.put("etiquetaAIAG", edAIAG.getText().toString());
-            add2.put("etiquetaLineSet", edLineSet.getText().toString());
-            add2.put("fecha", currentDate);
-            add2.put("fechaInsercion", currentDateoHrs);
-            BD.insert("Registros", null, add2);
-        }
+                add2.put("CodigoBarras", DatosRec.get(3));
+                add2.put("etiqueta2D", Codigo2D);
+                add2.put("etiquetaAIAG", edAIAG.getText().toString());
+                add2.put("etiquetaLineSet", edLineSet.getText().toString());
+                add2.put("fecha", currentDate);
+                add2.put("fechaInsercion", currentDateoHrs);
+                BD.insert("Registros", null, add2);
+            }
+        /*}
+        else{
+            Toast.makeText(this, "Etiqueta previamente escaneada", Toast.LENGTH_SHORT).show();
+        }*/
         add.clear();
         add2.clear();
         BD.close();
@@ -436,7 +451,7 @@ public class Lectura extends AppCompatActivity {
         try{
             ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
             SQLiteDatabase BD = adminBD.getWritableDatabase();
-            BD.execSQL("delete from Registros where CodigoBarras = '" + DatosRec.get(3) + "'" );
+            //BD.execSQL("delete from Registros where CodigoBarras = '" + DatosRec.get(3) + "'" );
             if(estado)
                 BD.execSQL("delete from Etiqueta where CodigoBarras = '" + DatosRec.get(3) + "'" );
             BD.close();
@@ -493,17 +508,11 @@ public class Lectura extends AppCompatActivity {
             ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
             SQLiteDatabase BD = adminBD.getWritableDatabase();
             Cursor fila = BD.rawQuery("Select etiqueta2D from Etiqueta where etiqueta2D = '" + Codigo2D + "'", null);
-            if(fila.moveToNext()){
-                C2D = fila.getString(0);
-            }
-            BD.close();
             //Si existe devuelve Verdadero
-            if(!C2D.equals("")){
+            if(fila.moveToFirst()){
                 estado = true;
             }
-            else{
-                estado = false;
-            }
+            BD.close();
             return estado;
         }
         catch (Exception ex){
@@ -579,6 +588,7 @@ public class Lectura extends AppCompatActivity {
                             //edLineSet.requestFocus();
                             edLineSet.setInputType(InputType.TYPE_NULL);
                             estado = true;
+                            edCodigo2D.requestFocus();
                         }
                         else if(IsTwo(DatosRec) == 1 || IsTwo(DatosRec) == 3){
                             siguiente();
@@ -647,7 +657,7 @@ public class Lectura extends AppCompatActivity {
             archivo.write("Cantidad: " + DatosRec.get(2));
             archivo.flush();
             archivo.close();
-            borrarTablasBD(adminBD, true);
+            //borrarTablasBD(adminBD, true);
         }
         catch (Exception e) {
             e.printStackTrace();
