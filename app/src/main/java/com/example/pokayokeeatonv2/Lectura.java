@@ -60,7 +60,7 @@ public class Lectura extends AppCompatActivity {
     ArrayList<Escaneos> escaneos;
     EditText edCodigo2D, edAIAG, edLineSet;
     TextView tvCantidad;
-    Button btSiguiente;
+    Button btSiguiente, btBorrar, btCancelar;
     int PiezasEscaneadas;
     boolean estado = false;
     int contador = 0;
@@ -102,6 +102,8 @@ public class Lectura extends AppCompatActivity {
         btSiguiente = findViewById(R.id.btSiguiente);
         btSiguiente.setVisibility(View.INVISIBLE);
         edCodigo2D.setInputType(InputType.TYPE_NULL);
+        btBorrar = findViewById(R.id.btLimpiar);
+        btCancelar = findViewById(R.id.btCancelar);
         //Arreglo que contiene los archivos txt en la ruta de la aplicación
         String[] archivos = fileList();
         crearFolder("Transmisiones");
@@ -133,19 +135,7 @@ public class Lectura extends AppCompatActivity {
                 edAIAG.setFilters(filterArray);
                 break;
         }
-        if(PiezasEscaneadas == Integer.parseInt(DatosRec.get(2))){
-            /*alerta();*/
-            ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
-            SQLiteDatabase BD = adminBD.getWritableDatabase();
-            Date date = new Date();
-            DateFormat fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            currentDate = fecha.format(date);
-            //crearArchivoTxt();
-            crearArchivo(currentDate);
-            limpiarBD(false);
-            BD.execSQL("update Etiqueta set Estado = 1 where CodigoBarras = " + Integer.parseInt(DatosRec.get(3)));
-            regresar();
-        }
+
         //Verfica que no exista el archivo para crearlo
         if(archivoExist(archivos, currentDate + ".txt")){
             try {
@@ -346,13 +336,38 @@ public class Lectura extends AppCompatActivity {
     public void siguiente(){
         //aumenta las piezas escaneadas
         PiezasEscaneadas += 1;
-        //actualiza los datos en la activity
+        /*//actualiza los datos en la activity
         Intent intent = new Intent(this, Lectura.class);
         intent.putExtra("datos", DatosRec);
         intent.putExtra("Piezas", PiezasEscaneadas);
-        //Guarda los escaneos en la BD
+        //Guarda los escaneos en la BD*/
         Escaneos();
-        startActivity(intent);
+        btBorrar.setEnabled(true);
+        btSiguiente.setEnabled(true);
+        btCancelar.setEnabled(true);
+        edCodigo2D.setText("");
+        edAIAG.setText("");
+        edLineSet.setText("");
+        edAIAG.setEnabled(false);
+        edLineSet.setEnabled(false);
+        tvCantidad.setText(" " + PiezasEscaneadas + " / " + DatosRec.get(2));
+        //startActivity(intent);
+        edCodigo2D.requestFocus();
+        /*btBorrar.setEnabled(true);
+        btSiguiente.setEnabled(true);*/
+        if(PiezasEscaneadas == Integer.parseInt(DatosRec.get(2))){
+            /*alerta();*/
+            ModeloBD adminBD = new ModeloBD(this, "Eaton", null, 1);
+            SQLiteDatabase BD = adminBD.getWritableDatabase();
+            Date date = new Date();
+            DateFormat fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            currentDate = fecha.format(date);
+            //crearArchivoTxt();
+            crearArchivo(currentDate);
+            limpiarBD(false);
+            BD.execSQL("update Etiqueta set Estado = 1 where CodigoBarras = " + Integer.parseInt(DatosRec.get(3)));
+            regresar();
+        }
     }
     private boolean isExistCodigo2D(String _2D){
         boolean bFound = false;
@@ -453,7 +468,7 @@ public class Lectura extends AppCompatActivity {
             SQLiteDatabase BD = adminBD.getWritableDatabase();
             //BD.execSQL("delete from Registros where CodigoBarras = '" + DatosRec.get(3) + "'" );
             if(estado)
-                BD.execSQL("delete from Etiqueta where CodigoBarras = '" + DatosRec.get(3) + "'" );
+                //BD.execSQL("delete from Etiqueta where CodigoBarras = '" + DatosRec.get(3) + "'" );
             BD.close();
         }
         catch(Exception ex){
@@ -474,6 +489,9 @@ public class Lectura extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
                     next("2D");
+                    btBorrar.setEnabled(false);
+                    btSiguiente.setEnabled(false);
+                    btCancelar.setEnabled(false);
                 }
                 return false;
             }
@@ -483,6 +501,9 @@ public class Lectura extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
                     next("AIAG");
+                    btBorrar.setEnabled(false);
+                    btSiguiente.setEnabled(false);
+                    btCancelar.setEnabled(false);
                 }
                 return false;
             }
@@ -492,6 +513,9 @@ public class Lectura extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
                     next("LineSet");
+                    btBorrar.setEnabled(false);
+                    btSiguiente.setEnabled(false);
+                    btCancelar.setEnabled(false);
                 }
                 return false;
             }
@@ -629,6 +653,8 @@ public class Lectura extends AppCompatActivity {
     }
     //Método que limpia la activity
     public void limpiar(){
+        btBorrar.setEnabled(false);
+        btSiguiente.setEnabled(false);
         edCodigo2D.setText("");
         edAIAG.setText("");
         edLineSet.setText("");

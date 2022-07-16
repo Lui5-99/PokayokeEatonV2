@@ -233,7 +233,8 @@ public class Packing extends AppCompatActivity {
         boolean bFound = false;
         ModeloBD adminDB = new ModeloBD(this, "Eaton", null, 1);
         SQLiteDatabase BD = adminDB.getWritableDatabase();
-        Cursor fila = BD.rawQuery("SELECT * FROM Etiqueta where CodigoBarras = '" + _2D + "'", null);
+        String query = "SELECT * FROM Registros where CodigoBarras = " + _2D + "";
+        Cursor fila = BD.rawQuery(query, null);
         if(fila.moveToFirst()){
             bFound = true;
         }
